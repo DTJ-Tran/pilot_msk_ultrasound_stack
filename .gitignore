@@ -211,3 +211,4 @@ secrets/
 *.gemini
 *.claude
 *.kilo
+*.zip
