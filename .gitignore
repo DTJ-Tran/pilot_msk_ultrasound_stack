@@ -207,3 +207,7 @@ secrets/
 # End of .gitignore
 *.docx
 *.bkp
+*.drawio
+*.gemini
+*.claude
+*.kilo

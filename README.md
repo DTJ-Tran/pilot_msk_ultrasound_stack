@@ -6,16 +6,17 @@
 - For large datasets, documents, presentations, or binary assets, store them in an external storage system (e.g., Amazon S3, Google Cloud Storage, Azure Blob) and reference them via a URL/link in the appropriate markdown or documentation file.
 - Images that illustrate documentation or design (e.g., diagrams, screenshots) may be committed directly **if** they are small and aid understanding, but large image datasets must be stored externally and linked.
 - Keep the repository lightweight and IDE‑friendly to ensure fast cloning, searching, and navigation.
-- Use **snake_case** naming for files and directories (lowercase letters, numbers, and underscores only). Avoid spaces and special characters. Hyphens are discouraged except for specific configuration files like `docker-compose.yaml` or `docker-compose.yml`. Uppercase is acceptable for constants (e.g., `CONFIG.json`) but prefer lowercase.
-- **Legacy code**: Files under the `LEGACY/` directory are deprecated and intended only for reference or maintenance; new development should use modern implementations. Treat them as read‑only references.
+- Use **snake_case** naming for files and directories (lowercase letters, numbers, and underscores only). Avoid spaces and special characters. Hyphens `-` are discouraged except for specific configuration files like `docker-compose.yaml` or `docker-compose.yml`. Uppercase is acceptable for constants / important and root modules (e.g., `CONFIG.json`) but prefer lowercase.
+- **Legacy code**: Files under the `LEGACY/` directory are deprecated and intended only for reference or maintenance; new development should use / implement a modern implementations in the `CODEBASE/`. Treat them as read‑only references / if have to use - use with cautious & signal through comment.
 
 ## Overview
-This repository contains the research, design, and implementation materials for the MSK Ultrasound Stack pilot project. It includes documentation, design artifacts, source code, and supporting files organized to facilitate collaborative development while maintaining clear separation between shared assets and individual developer secrets.
+This repository contains the research, design, and implementation materials for the MSK Ultrasound Stack pilot project. It includes documentation, design artifacts, source code, and supporting files organized to facilitate collaborative development while maintaining clear separation between shared assets and individual developer secrets. It also includes agent skills definitions in the `AGENT_SKILL/` directory for AI-assisted development.
 
 ## Directory Structure
 ```
 PILOT_PROJECT/
 ├── .gitignore                # Git ignore rules (includes OS/editor temp files, dependencies, and `secrets/` folder)
+├── AGENT_SKILL                # Skills file for the agentic automation system
 ├── Reading_docs/             # Reference and background materials
 │   ├── PLAN/                 # Project plans and timelines
 │   ├── Requirement_Analysis/ # Stakeholder and functional requirements
@@ -105,8 +106,6 @@ Each developer is responsible for:
 
 If you need to share a secret securely with a teammate, use your organization’s approved secret‑sharing tool (e.g., 1Password Teams, HashiCorp Vault, AWS Secrets Manager) — **never** commit plaintext secrets.
 
-## License
-[Specify your license here, e.g., MIT, Apache 2.0, or internal proprietary.]
 
 ---
 
