@@ -7,6 +7,7 @@
 - Images that illustrate documentation or design (e.g., diagrams, screenshots) may be committed directly **if** they are small and aid understanding, but large image datasets must be stored externally and linked.
 - Keep the repository lightweight and IDE‑friendly to ensure fast cloning, searching, and navigation.
 - Use **snake_case** naming for files and directories (lowercase letters, numbers, and underscores only). Avoid spaces and special characters. Hyphens are discouraged except for specific configuration files like `docker-compose.yaml` or `docker-compose.yml`. Uppercase is acceptable for constants (e.g., `CONFIG.json`) but prefer lowercase.
+- **Legacy code**: Files under the `LEGACY/` directory are deprecated and intended only for reference or maintenance; new development should use modern implementations. Treat them as read‑only references.
 
 ## Overview
 This repository contains the research, design, and implementation materials for the MSK Ultrasound Stack pilot project. It includes documentation, design artifacts, source code, and supporting files organized to facilitate collaborative development while maintaining clear separation between shared assets and individual developer secrets.
