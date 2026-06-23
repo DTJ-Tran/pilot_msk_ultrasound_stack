@@ -197,5 +197,13 @@ Temporary Items
 *~
 .*.swp
 .idea/
-
+*.csv
+*.pdf
+*.pptx
+# enviroment file
+*.env
+secrets/
+*ckpt/
 # End of .gitignore
+*.docx
+*.bkp

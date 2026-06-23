@@ -1,0 +1,215 @@
+name: "msk_vision_pipeline_ensemble"
+platform: "ensemble"
+backend: "ensemble"
+max_batch_size: 8
+
+# MODIFY HERE: Declare 2 separate input ports with fixed dimensions; no longer using the flexible -1 dimension
+input [
+  {
+    name: "input_224"
+    data_type: TYPE_FP32
+    dims: [ 3, 224, 224 ]
+  },
+  {
+    name: "input_512"
+    data_type: TYPE_FP32
+    dims: [ 3, 512, 512 ]
+  }
+]
+
+output [
+  {
+    name: "angle_classify_convnext_tiny_logits"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  },
+  {
+    name: "angle_classify_resnet50_logits"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  },
+  {
+    name: "angle_classify_swin_v2_s_logits"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  },
+  {
+    name: "angle_classify_densenet_logits"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  },
+  {
+    name: "angle_classify_efficientnet_logits"
+    data_type: TYPE_FP32
+    dims: [ 4 ]
+  },
+  {
+    name: "inflammation_model_efficientnet_b0_ultrasound_2_cls_logits"
+    data_type: TYPE_FP32
+    dims: [ 2 ]
+  },
+  {
+    name: "segmentation_model_unet_resnet101_logits"
+    data_type: TYPE_FP32
+    dims: [ 7, 512, 512 ]
+  },
+  {
+    name: "segmentation_model_unet3plus_att_logits"
+    data_type: TYPE_FP32
+    dims: [ 7, 512, 512 ]
+  },
+  {
+    name: "segmentation_model_post_deeplabv3_resnet101_logits"
+    data_type: TYPE_FP32
+    dims: [ 7, 512, 512 ]
+  },
+  {
+    name: "segmentation_model_post_deeplabv3_logits"
+    data_type: TYPE_FP32
+    dims: [ 7, 512, 512 ]
+  },
+  {
+    name: "segmentation_model_post_efficientfeedback_logits"
+    data_type: TYPE_FP32
+    dims: [ 7, 512, 512 ]
+  }
+]
+
+ensemble_scheduling {
+  step [
+    # ---- 224x224 MODEL GROUP (Processes input data from the input_224 variable) ----
+    {
+      model_name: "angle_classify_convnext_tiny"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_224"
+      }
+      output_map {
+        key: "logits"
+        value: "angle_classify_convnext_tiny_logits"
+      }
+    },
+    {
+      model_name: "angle_classify_resnet50"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_224"
+      }
+      output_map {
+        key: "logits"
+        value: "angle_classify_resnet50_logits"
+      }
+    },
+    {
+      model_name: "angle_classify_swin_v2_s"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_224"
+      }
+      output_map {
+        key: "logits"
+        value: "angle_classify_swin_v2_s_logits"
+      }
+    },
+    {
+      model_name: "angle_classify_densenet"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_224"
+      }
+      output_map {
+        key: "logits"
+        value: "angle_classify_densenet_logits"
+      }
+    },
+    {
+      model_name: "angle_classify_efficientnet"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_224"
+      }
+      output_map {
+        key: "logits"
+        value: "angle_classify_efficientnet_logits"
+      }
+    },
+    {
+      model_name: "inflammation_model_efficientnet_b0_ultrasound_2_cls"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_224"
+      }
+      output_map {
+        key: "logits"
+        value: "inflammation_model_efficientnet_b0_ultrasound_2_cls_logits"
+      }
+    },
+    # ---- 512x512 MODEL GROUP (Processes input data from the input_512 variable) ----
+    {
+      model_name: "segmentation_model_unet_resnet101"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_512"
+      }
+      output_map {
+        key: "logits"
+        value: "segmentation_model_unet_resnet101_logits"
+      }
+    },
+    {
+      model_name: "segmentation_model_unet3plus_att"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_512"
+      }
+      output_map {
+        key: "logits"
+        value: "segmentation_model_unet3plus_att_logits"
+      }
+    },
+    {
+      model_name: "segmentation_model_post_deeplabv3_resnet101"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_512"
+      }
+      output_map {
+        key: "logits"
+        value: "segmentation_model_post_deeplabv3_resnet101_logits"
+      }
+    },
+    {
+      model_name: "segmentation_model_post_deeplabv3"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_512"
+      }
+      output_map {
+        key: "logits"
+        value: "segmentation_model_post_deeplabv3_logits"
+      }
+    },
+    {
+      model_name: "segmentation_model_post_efficientfeedback"
+      model_version: -1
+      input_map {
+        key: "input_image"
+        value: "input_512"
+      }
+      output_map {
+        key: "logits"
+        value: "segmentation_model_post_efficientfeedback_logits"
+      }
+    }
+  ]
+}

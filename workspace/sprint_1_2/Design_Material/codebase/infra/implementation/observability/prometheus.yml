@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 30s  # Poll every 30 seconds instead of hammering it every 5s
+  scrape_timeout: 25s   # Give it 25 full seconds to respond before timing out
+
+scrape_configs:
+  - job_name: 'triton'
+    metrics_path: '/metrics'
+    scheme: 'https'
+    tls_config:
+      insecure_skip_verify: true
+    static_configs:
+      - targets: ['dtj-tran--triton-s3-service-unified-triton-server.modal.run']
