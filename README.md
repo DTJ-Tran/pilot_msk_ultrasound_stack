@@ -6,7 +6,7 @@
 - For large datasets, documents, presentations, or binary assets, store them in an external storage system (e.g., Amazon S3, Google Cloud Storage, Azure Blob) and reference them via a URL/link in the appropriate markdown or documentation file.
 - Images that illustrate documentation or design (e.g., diagrams, screenshots) may be committed directly **if** they are small and aid understanding, but large image datasets must be stored externally and linked.
 - Keep the repository lightweight and IDE‑friendly to ensure fast cloning, searching, and navigation.
-- Use **snake_case** naming for files and directories (lowercase letters, numbers, and underscores only). Avoid spaces, hyphens, and special characters. Uppercase is acceptable for constants (e.g., `CONFIG.json`) but prefer lowercase.
+- Use **snake_case** naming for files and directories (lowercase letters, numbers, and underscores only). Avoid spaces and special characters. Hyphens are discouraged except for specific configuration files like `docker-compose.yaml` or `docker-compose.yml`. Uppercase is acceptable for constants (e.g., `CONFIG.json`) but prefer lowercase.
 
 ## Overview
 This repository contains the research, design, and implementation materials for the MSK Ultrasound Stack pilot project. It includes documentation, design artifacts, source code, and supporting files organized to facilitate collaborative development while maintaining clear separation between shared assets and individual developer secrets.
