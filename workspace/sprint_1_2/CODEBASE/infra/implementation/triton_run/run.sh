@@ -1,1 +1,2 @@
+cd ../PILOT_PROJECT/workspace/sprint_1_2/CODEBASE/infra/implementation/triton_run
 modal deploy PILOT_PROJECT/workspace/sprint_1_2/codebase/infra/implementation/triton_run/modal_triton.py
