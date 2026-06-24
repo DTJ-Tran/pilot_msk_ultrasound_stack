@@ -7,16 +7,17 @@ Orchestrates API routers, role checks, Socratic circuit-breaker state evaluation
 Core Backend Team
 
 ## Boundary
-FastAPI server, API routers, authentication middleware, circuit breaker engine, report generator, RAG coordinator, ledger logger, and connections to Postgres, S3, Redis, Triton, Qdrant, ladybugDB.
+FastAPI server, API routers, authentication middleware, circuit breaker engine, report generator, RAG coordinator, RAG-Referee (BERT), ledger logger, and connections to Postgres + pgvector, S3 (MinIO), Redis, Triton, ladybugDB.
 
 ## Internal Design
 - Built with FastAPI (Python) and Uvicorn for async HTTP server.
 - Authentication middleware validates JWT tokens and enforces RBAC (roles: RO_RADIOLOGIST, RO_THERAPIST).
 - Socratic circuit-breaker engine monitors interaction telemetry (hover duration, decision time, override magnitude) and triggers safety dialogs.
 - Clinical Report Engine uses ReportLab to generate bilingual PDF reports per Circular 46/2018/TT-BYT.
-- RAG Coordinator orchestrates Retrieval-Augmented Generation: dense vector lookup in Qdrant, graph traversal in ladybugDB, prompt enrichment, LLM generation on Triton (PhoGPT/MedGemma), and hallucination guarding.
+- RAG Coordinator orchestrates Retrieval-Augmented Generation: dense vector lookup in pgvector (PostgreSQL HNSW), graph traversal in ladybugDB, mandatory pre-generation retrieval, prompt enrichment, LLM generation on browser WebLLM (GemmaE2B) or cloud Vertex AI (MedGemma via NFR-16a), and hallucination guarding via BERT RAG-Referee.
+- NLP Scrubber (Microsoft Presidio): re-verifies client edge redaction, refines residual PII, and returns error if unresolvable.
 - Ledger Logger appends immutable, cryptographically chained audit logs to Postgres via triggers preventing UPDATE/DELETE.
-- Connections: Postgres (via SQLAlchemy), S3 (via boto3), Redis (via redis-py), Triton (via gRPC), Qdrant (via gRPC/HTTP), ladybugDB (via in-process C++ bindings).
+- Connections: Postgres + pgvector (via SQLAlchemy), S3 (via boto3), Redis (via redis-py), Triton (via gRPC — CV + EmbeddingGemma only), ladybugDB (via in-process C++ bindings).
 - Model weights loaded at startup from internal registry; cached in memory.
 - API endpoints layered: public clinical (sessions, analysis, reports, feedback) and internal/local safety (explanations, safety, drift, RAG, activations, annotations, ground-truth, escalation, morphology, telemetry).
 

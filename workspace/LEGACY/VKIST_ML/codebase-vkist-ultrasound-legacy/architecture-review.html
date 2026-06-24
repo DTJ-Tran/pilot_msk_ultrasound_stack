@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture Review: VKIST Ultrasound Codebase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'neutral',
+    });
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased p-6 md:p-12">
+    <main class="max-w-5xl mx-auto">
+        
+        <header class="mb-8 border-b border-gray-200 pb-6">
+            <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Architecture Review: VKIST Ultrasound Codebase</h1>
+            <p class="text-lg text-gray-600">Identified deepening opportunities to improve testability and AI-navigability.</p>
+        </header>
+        
+        <article class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8 mb-8 transition-shadow hover:shadow-md">
+            
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Candidate: Refactor app.py into modular services</h2>
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-red-100 text-red-800">
+                        Priority: Strong
+                    </span>
+                </div>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <p class="text-sm bg-gray-50 p-3 rounded-lg border border-gray-100 text-gray-700">
+                    <strong class="text-gray-900">Files Affected:</strong> <code class="text-blue-600">app.py</code> 
+                    <span class="text-gray-400 mx-2">→</span> 
+                    <strong class="text-gray-900">Proposed:</strong> 
+                    <code class="bg-white px-1.5 py-0.5 rounded border text-xs">inference_pipeline.py</code>, 
+                    <code class="bg-white px-1.5 py-0.5 rounded border text-xs">model_loader.py</code>, 
+                    <code class="bg-white px-1.5 py-0.5 rounded border text-xs">preprocessor.py</code>, 
+                    <code class="bg-white px-1.5 py-0.5 rounded border text-xs">postprocessor.py</code>
+                </p>
+                
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-1">The Problem</h3>
+                    <p class="text-gray-700 leading-relaxed">
+                        The main application file (<code class="bg-gray-100 px-1 rounded text-sm text-red-600">app.py</code>) is acting as a "god object". It manages web framework setup, model loading, inference pipelines, preprocessing, postprocessing, utilities, and API endpoints simultaneously. This creates **low architectural depth** (the interface is nearly as complex as its implementation), **poor testability** (isolated pipeline units cannot be targeted), and **low locality** (unrelated logic must be parsed to fix individual features).
+                    </p>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-1">Proposed Solution</h3>
+                    <p class="text-gray-700 mb-2">Split operational concerns into highly focused, cleanly encapsulated modules:</p>
+                    <ul class="space-y-2 text-gray-700 pl-4 list-disc">
+                        <li><strong><code class="text-gray-900">ModelLoader</code>:</strong> Handles asynchronous loading and persistent caching of PyTorch weights (angle, inflammation, segmentation models).</li>
+                        <li><strong><code class="text-gray-900">Preprocessor</code>:</strong> Isolates structural image transformations and CLAHE enhancement parameters.</li>
+                        <li><strong><code class="text-gray-900">InferencePipeline</code>:</strong> Orchestrates execution flows: angle classification <span class="text-gray-400">→</span> inflammation detection <span class="text-gray-400">→</span> conditional segmentation <span class="text-gray-400">→</span> sizing/severity metrics.</li>
+                        <li><strong><code class="text-gray-900">Postprocessor</code>:</strong> Houses structural thickness evaluations, severity metrics calculations, and visual overlay generators.</li>
+                        <li><strong><code class="text-gray-900">APIHandler</code>:</strong> A thin, declarative FastAPI endpoint wrapper delegating exclusively to the primary <code class="text-sm">InferencePipeline</code>.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-1">Expected Architecture Benefits</h3>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-gray-700">
+                        <li class="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                            <strong class="text-blue-900 block mb-0.5">Architectural Depth</strong> High complexity is hidden beneath simple interfaces (e.g., <code class="text-xs">analyze_image(img) -> Result</code>).
+                        </li>
+                        <li class="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                            <strong class="text-blue-900 block mb-0.5">High Code Locality</strong> Bugs in sizing algorithms map cleanly to the postprocessor without risking model caching logic.
+                        </li>
+                        <li class="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                            <strong class="text-blue-900 block mb-0.5">Simplified Testing</strong> Individual pipeline states and weights can be unit-tested seamlessly using mock behaviors.
+                        </li>
+                        <li class="bg-blue-50/50 p-3 rounded-lg border border-blue-100">
+                            <strong class="text-blue-900 block mb-0.5">AI and Dev Navigation</strong> Highly categorized file trees accelerate context gathering for language models and onboarding engineers.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
+                <div class="border border-gray-200 rounded-xl p-4 bg-gray-50">
+                    <h4 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> Before (Shallow Architecture)
+                    </h4>
+                    <div class="mermaid bg-white p-4 rounded-lg border border-gray-100 shadow-inner overflow-x-auto">
+                        graph TD
+                            A[FastAPI Endpoint] --> B[load_angle_model]
+                            A --> C[load_inflammation_model]
+                            A --> D[load_segmentation_model_sup]
+                            A --> E[load_segmentation_model_post]
+                            A --> F[predict_angle]
+                            A --> G[predict_inflammation]
+                            A --> H[segment_image]
+                            A --> I[measure_thickness_new]
+                            A --> J[analyze_inflammation_severity]
+                            A --> K[create_segmentation_overlay]
+                            A --> L[apply_clahe]
+                            A --> M[save_patient_data]
+
+                            style A fill:#f87171,stroke:#ef4444,stroke-width:2px,color:#fff
+                            style B fill:#fee2e2,stroke:#f87171
+                            style C fill:#fee2e2,stroke:#f87171
+                            style D fill:#fee2e2,stroke:#f87171
+                            style E fill:#fee2e2,stroke:#f87171
+                            style F fill:#fee2e2,stroke:#f87171
+                            style G fill:#fee2e2,stroke:#f87171
+                            style H fill:#fee2e2,stroke:#f87171
+                            style I fill:#fee2e2,stroke:#f87171
+                            style J fill:#fee2e2,stroke:#f87171
+                            style K fill:#fee2e2,stroke:#f87171
+                            style L fill:#fee2e2,stroke:#f87171
+                            style M fill:#fee2e2,stroke:#f87171
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-xl p-4 bg-gray-50">
+                    <h4 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span> After (Deepened Architecture)
+                    </h4>
+                    <div class="mermaid bg-white p-4 rounded-lg border border-gray-100 shadow-inner overflow-x-auto">
+                        graph TD
+                            subgraph API [API Gateway Router]
+                                A[FastAPI Endpoint] --> B[InferencePipeline.analyze]
+                            end
+                            
+                            subgraph InferencePipeline [Core Workflow Orchestrator]
+                                B --> C[ModelLoader.get_angle_model]
+                                B --> D[Preprocess]
+                                B --> E[predict_angle]
+                                E --> F{Inflammation?}
+                                F -->|Yes| G[ModelLoader.get_inflammation_model]
+                                G --> H[predict_inflammation]
+                                H --> I{Inflammation Detected?}
+                                I -->|Yes| J[ModelLoader.get_seg_model_sup/post]
+                                J --> K[segment_image]
+                                K --> L[measure_thickness]
+                                K --> M[analyze_severity]
+                                L --> N[Result: Measurement]
+                                M --> O[Result: Severity]
+                                K --> P[Result: Segmentation Masks]
+                                E -->|No| Q[Result: Angle Only]
+                                F -->|No| Q
+                            end
+                            
+                            subgraph ModelLoader [Model Assets Lifecycle]
+                                C --> C1[Load Angle Model]
+                                G --> G1[Load Inflammation Model]
+                                J --> J1[Load Segmentation Model]
+                            end
+                            
+                            subgraph Preprocessor [Image Engineering]
+                                D --> D1[Transforms]
+                                D --> D2[CLAHE]
+                            end
+                            
+                            subgraph Postprocessor [Metrics & Artifact Generation]
+                                L --> L1[Thickness Calc]
+                                M --> M1[Severity Scoring]
+                            end
+
+                            style A fill:#3b82f6,stroke:#2563eb,stroke-width:2px,color:#fff
+                            style B fill:#dbeafe,stroke:#60a5fa
+                            style C fill:#dbeafe,stroke:#60a5fa
+                            style D fill:#dbeafe,stroke:#60a5fa
+                            style E fill:#dbeafe,stroke:#60a5fa
+                            style F fill:#dbeafe,stroke:#60a5fa
+                            style G fill:#dbeafe,stroke:#60a5fa
+                            style H fill:#dbeafe,stroke:#60a5fa
+                            style I fill:#dbeafe,stroke:#60a5fa
+                            style J fill:#dbeafe,stroke:#60a5fa
+                            style K fill:#dbeafe,stroke:#60a5fa
+                            style L fill:#dbeafe,stroke:#60a5fa
+                            style M fill:#dbeafe,stroke:#60a5fa
+                            style N fill:#e0f2fe,stroke:#0284c7
+                            style O fill:#e0f2fe,stroke:#0284c7
+                            style P fill:#e0f2fe,stroke:#0284c7
+                            style Q fill:#e0f2fe,stroke:#0284c7
+                            style C1 fill:#f3e8ff,stroke:#a855f7
+                            style G1 fill:#f3e8ff,stroke:#a855f7
+                            style J1 fill:#f3e8ff,stroke:#a855f7
+                            style D1 fill:#fef3c7,stroke:#d97706
+                            style D2 fill:#fef3c7,stroke:#d97706
+                            style L1 fill:#ecfccb,stroke:#65a30d
+                            style M1 fill:#ecfccb,stroke:#65a30d
+                    </div>
+                </div>
+            </div>
+
+        </article>
+        
+        <footer class="text-center text-sm text-gray-500 mt-12">
+            <p>Total candidates identified: <span class="font-semibold text-gray-700">1</span></p>
+        </footer>
+    </main>
+</body>
+</html>
