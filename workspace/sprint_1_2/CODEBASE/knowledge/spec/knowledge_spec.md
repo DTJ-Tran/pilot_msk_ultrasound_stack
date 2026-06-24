@@ -11,10 +11,10 @@ Qdrant vector database instances, ladybugDB graph database instances, embedding 
 
 ## Internal Design
 - Hybrid knowledge architecture: vector similarity search + graph traversal
-- Qdrant: stores guideline section embeddings (BioClinicalBERT, PubMedBERT) with payload metadata
+- pgVec: stores guideline section embeddings (BioClinicalBERT, PubMedBERT) with payload metadata
 - ladybugDB: stores ontology concepts (SNOMED-CT, LOINC, RadLex) and relational axioms
 - EmbeddingGemma: generates 768-dimension vectors for text chunks
-- PhoGPT/MedGPT: LLM for answer generation with constrained decoding
+- GemmaE2B/MedGemma: LLM for answer generation with constrained decoding
 - Retrieval pipeline: hybrid search (vector + BM25) → graph expansion → reranking
 - Grounding module: verifies LLM outputs against source guidelines with citation extraction
 - Arbitration engine: resolves conflicting evidence using belief propagation

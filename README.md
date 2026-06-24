@@ -16,22 +16,20 @@ This repository contains the research, design, and implementation materials for 
 ```
 PILOT_PROJECT/
 ├── .gitignore                # Git ignore rules (includes OS/editor temp files, dependencies, and `secrets/` folder)
-├── AGENT_SKILL                # Skills file for the agentic automation system
-├── Reading_docs/             # Reference and background materials
+├── AGENT_SKILL               # Skills file for the agentic automation system
+├── PROJ_LEVEL_READING/       # reading document on prj level (project-vision, dev-plan, user-analysis)
 │   ├── PLAN/                 # Project plans and timelines
 │   ├── Requirement_Analysis/ # Stakeholder and functional requirements
 │   ├── Technical_Brainstorming/ # Brainstorming notes, sketches, whitepapers
 │   └── User_Analysis/        # User personas, workflows, and usability research
 ├── workspace/                # Primary working area for sprints and development
 │   ├── sprint_1_2/           # Example sprint folder
-│   │   ├── CAVEAT_TASK.md    # Known limitations and caveats
-│   │   ├── CONTEXT.md        # Sprint context and goals
-│   │   ├── DESIGN_MATERIAL/  # UI/UX mockups, wireframes, style guides
-│   │   ├── docs/             # Generated or supplemental documentation
-│   │   ├── PROJECT_VIS.md    # Project visualization and architecture diagrams
+│   │   ├── LEGACY            # The legacy material - for archieved / pre-existed project
+│   │   ├── CODEBASE          # The project codebase
+│   │   ├── Design_Material/  # The system design - API - and UIX design material 
 │   │   ├── SOFTWARE_SYSTEM_DESIGN_FR_25.md # Detailed software design specification
 │   │   ├── SOLUTION_ARCHITECTURE_SPEC.md   # Solution architecture overview
-│   │   └── visualization/    # Charts, diagrams, and visual assets
+│   │   └── VISUALIZATION/    # Charts, diagrams, and visual assets
 │   └── ...                   # Additional sprint folders as needed
 ├── secrets/                  # **Developer‑managed secrets** (NOT tracked by git)
 │   │   # Each developer should maintain their own copy of this folder
