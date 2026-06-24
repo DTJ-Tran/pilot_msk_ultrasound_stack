@@ -84,101 +84,101 @@ app.add_middleware(
 
 # ============ MODEL LOADING ============
 
-def load_angle_model(model_name):
-    print(f"📄 Loading angle model: {model_name}")
+# def load_angle_model(model_name):
+#     print(f"📄 Loading angle model: {model_name}")
     
-    if model_name == "convnext":
-        model = models.convnext_tiny(weights=None)
-        model.classifier[2] = nn.Linear(model.classifier[2].in_features, 4)
-        checkpoint = torch.load(f"models/best_convnext_tiny.pth", map_location=device, weights_only=False)
-        checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
-        model.load_state_dict(checkpoint)
-    elif model_name == "densenet":
-        model = models.densenet121(weights=None)
-        model.classifier = nn.Linear(model.classifier.in_features, 4)
-        checkpoint = torch.load(f"models/best_densenet.pth", map_location=device, weights_only=False)
-        checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
-        model.load_state_dict(checkpoint)
-    elif model_name == "resnet50":
-        model = models.resnet50(weights=None)
-        model.fc = nn.Linear(model.fc.in_features, 4)
-        checkpoint = torch.load(f"models/best_resnet50.pth", map_location=device, weights_only=False)
-        checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
-        model.load_state_dict(checkpoint)
-    elif model_name == "efficientnet_b2":
-        model = models.efficientnet_b2(weights=None)
-        model.classifier[1] = nn.Linear(model.classifier[1].in_features, 4)
-        checkpoint = torch.load(f"models/best_efficientnet_b2.pth", map_location=device, weights_only=False)
-        checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
-        model.load_state_dict(checkpoint)
-    elif model_name == "swin":
-        model = models.swin_v2_s(weights=None)
-        model.head = nn.Linear(model.head.in_features, 4)
-        checkpoint = torch.load(f"models/best_swin_v2_s.pth", map_location=device, weights_only=False)
-        checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
-        model.load_state_dict(checkpoint)
-    else:
-        raise ValueError(f"Unknown angle model: {model_name}")
+#     if model_name == "convnext":
+#         model = models.convnext_tiny(weights=None)
+#         model.classifier[2] = nn.Linear(model.classifier[2].in_features, 4)
+#         checkpoint = torch.load(f"models/best_convnext_tiny.pth", map_location=device, weights_only=False)
+#         checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
+#         model.load_state_dict(checkpoint)
+#     elif model_name == "densenet":
+#         model = models.densenet121(weights=None)
+#         model.classifier = nn.Linear(model.classifier.in_features, 4)
+#         checkpoint = torch.load(f"models/best_densenet.pth", map_location=device, weights_only=False)
+#         checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
+#         model.load_state_dict(checkpoint)
+#     elif model_name == "resnet50":
+#         model = models.resnet50(weights=None)
+#         model.fc = nn.Linear(model.fc.in_features, 4)
+#         checkpoint = torch.load(f"models/best_resnet50.pth", map_location=device, weights_only=False)
+#         checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
+#         model.load_state_dict(checkpoint)
+#     elif model_name == "efficientnet_b2":
+#         model = models.efficientnet_b2(weights=None)
+#         model.classifier[1] = nn.Linear(model.classifier[1].in_features, 4)
+#         checkpoint = torch.load(f"models/best_efficientnet_b2.pth", map_location=device, weights_only=False)
+#         checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
+#         model.load_state_dict(checkpoint)
+#     elif model_name == "swin":
+#         model = models.swin_v2_s(weights=None)
+#         model.head = nn.Linear(model.head.in_features, 4)
+#         checkpoint = torch.load(f"models/best_swin_v2_s.pth", map_location=device, weights_only=False)
+#         checkpoint = {k.replace('model.', ''): v for k, v in checkpoint.items()}
+#         model.load_state_dict(checkpoint)
+#     else:
+#         raise ValueError(f"Unknown angle model: {model_name}")
     
-    print(f"✅ Loaded: {model_name}")
-    return model.to(device).eval()
+#     print(f"✅ Loaded: {model_name}")
+#     return model.to(device).eval()
 
-def load_inflammation_model():
-    print("📄 Loading inflammation model")
-    model = models.efficientnet_b0(weights=None)
-    model.classifier[1] = nn.Linear(model.classifier[1].in_features, 2)
-    model.load_state_dict(torch.load("models/efficientnet_b0_ultrasound_2_class.pth", map_location=device, weights_only=False))
-    print("✅ Loaded inflammation model")
-    return model.to(device).eval()
+# def load_inflammation_model():
+#     print("📄 Loading inflammation model")
+#     model = models.efficientnet_b0(weights=None)
+#     model.classifier[1] = nn.Linear(model.classifier[1].in_features, 2)
+#     model.load_state_dict(torch.load("models/efficientnet_b0_ultrasound_2_class.pth", map_location=device, weights_only=False))
+#     print("✅ Loaded inflammation model")
+#     return model.to(device).eval()
 
-def load_segmentation_model_sup(model_name):
-    print(f"📄 Loading segmentation model SUP: {model_name}")
+# def load_segmentation_model_sup(model_name):
+#     print(f"📄 Loading segmentation model SUP: {model_name}")
     
-    if model_name == "deeplabv3":
-        model = models.segmentation.deeplabv3_resnet50(weights=None)
-        in_ch = model.classifier[-1].in_channels
-        model.classifier = nn.Sequential(
-            model.classifier[0],
-            nn.Dropout(0.3),
-            nn.Conv2d(in_ch, 7, kernel_size=1)
-        )
-        model.load_state_dict(torch.load("models/best_model_Deeplav3.pth", map_location=device, weights_only=False), strict=False)
-    elif model_name == "unet_resnet101":
-        try:
-            from segmentation_models_pytorch import Unet
-            model = Unet(encoder_name="resnet101", encoder_weights=None, classes=7)
-            model.load_state_dict(torch.load("models/unet_resnet101.pth", map_location=device, weights_only=False))
-        except ImportError:
-            raise ValueError("segmentation_models_pytorch not installed")
-    elif model_name == "efficientfeedback":
-        model = EfficientFeedbackNetwork(in_channels=3, num_class=7)
-        model.load_state_dict(torch.load("models/efficientfeedback.pth", map_location=device, weights_only=False))
-    elif model_name == "unet3plus":
-        model = UNet3Plus_Attention(in_channels=3, num_classes=7)
-        model.load_state_dict(torch.load("models/unet3plus_att.pth", map_location=device, weights_only=False))
-    else:
-        raise ValueError(f"Unknown segmentation model: {model_name}")
+#     if model_name == "deeplabv3":
+#         model = models.segmentation.deeplabv3_resnet50(weights=None)
+#         in_ch = model.classifier[-1].in_channels
+#         model.classifier = nn.Sequential(
+#             model.classifier[0],
+#             nn.Dropout(0.3),
+#             nn.Conv2d(in_ch, 7, kernel_size=1)
+#         )
+#         model.load_state_dict(torch.load("models/best_model_Deeplav3.pth", map_location=device, weights_only=False), strict=False)
+#     elif model_name == "unet_resnet101":
+#         try:
+#             from segmentation_models_pytorch import Unet
+#             model = Unet(encoder_name="resnet101", encoder_weights=None, classes=7)
+#             model.load_state_dict(torch.load("models/unet_resnet101.pth", map_location=device, weights_only=False))
+#         except ImportError:
+#             raise ValueError("segmentation_models_pytorch not installed")
+#     elif model_name == "efficientfeedback":
+#         model = EfficientFeedbackNetwork(in_channels=3, num_class=7)
+#         model.load_state_dict(torch.load("models/efficientfeedback.pth", map_location=device, weights_only=False))
+#     elif model_name == "unet3plus":
+#         model = UNet3Plus_Attention(in_channels=3, num_classes=7)
+#         model.load_state_dict(torch.load("models/unet3plus_att.pth", map_location=device, weights_only=False))
+#     else:
+#         raise ValueError(f"Unknown segmentation model: {model_name}")
     
-    print(f"✅ Loaded SUP: {model_name}")
-    return model.to(device).eval()
+#     print(f"✅ Loaded SUP: {model_name}")
+#     return model.to(device).eval()
 
-def load_segmentation_model_post(model_name):
-    print(f"📄 Loading segmentation model POST: {model_name}")
+# def load_segmentation_model_post(model_name):
+#     print(f"📄 Loading segmentation model POST: {model_name}")
     
-    if model_name == "deeplabv3_resnet101":
-        model = models.segmentation.deeplabv3_resnet101(weights=None)
-        in_ch = model.classifier[-1].in_channels
-        model.classifier = nn.Sequential(
-            model.classifier[0],
-            nn.Dropout(0.3),
-            nn.Conv2d(in_ch, 7, kernel_size=1)
-        )
-        model.load_state_dict(torch.load("models/best_model_deeplabv3_resnet101_seed_16.pth", map_location=device, weights_only=False), strict=False)
-    else:
-        raise ValueError(f"Unknown post segmentation model: {model_name}")
+#     if model_name == "deeplabv3_resnet101":
+#         model = models.segmentation.deeplabv3_resnet101(weights=None)
+#         in_ch = model.classifier[-1].in_channels
+#         model.classifier = nn.Sequential(
+#             model.classifier[0],
+#             nn.Dropout(0.3),
+#             nn.Conv2d(in_ch, 7, kernel_size=1)
+#         )
+#         model.load_state_dict(torch.load("models/best_model_deeplabv3_resnet101_seed_16.pth", map_location=device, weights_only=False), strict=False)
+#     else:
+#         raise ValueError(f"Unknown post segmentation model: {model_name}")
     
-    print(f"✅ Loaded POST: {model_name}")
-    return model.to(device).eval()
+#     print(f"✅ Loaded POST: {model_name}")
+#     return model.to(device).eval()
 
 # Transforms
 angle_transform = transforms.Compose([
@@ -212,7 +212,7 @@ def predict_angle(model, image_pil):
 @torch.no_grad()
 def predict_inflammation(model, image_pil):
     img_tensor = inflammation_transform(image_pil).unsqueeze(0).to(device)
-    output = model(img_tensor)
+    output = model(img_tensor) # TRITON 
     probs = torch.softmax(output, dim=1)
     pred_class = torch.argmax(probs, dim=1).item()
     confidence = probs[0][pred_class].item()
@@ -559,16 +559,17 @@ def apply_clahe(image_pil):
     enhanced_rgb = cv2.cvtColor(enhanced_gray, cv2.COLOR_GRAY2RGB)
     return Image.fromarray(enhanced_rgb)
 
-# Mount thư mục static (CSS, JS)
-app.mount("/css", StaticFiles(directory="templates/css"), name="css")
-app.mount("/js", StaticFiles(directory="templates/js"), name="js")
+# # Mount thư mục static (CSS, JS)
+# app.mount("/css", StaticFiles(directory="templates/css"), name="css")
+# app.mount("/js", StaticFiles(directory="templates/js"), name="js")
 
-@app.get("/")
-async def read_index():
-    html_file = Path(TEMPLATES_FOLDER) / "index.html"
-    if html_file.exists():
-        return FileResponse(html_file)
-    return JSONResponse({"error": "Template not found"})
+
+# @app.get("/")
+# async def read_index():
+#     html_file = Path(TEMPLATES_FOLDER) / "index.html"
+#     if html_file.exists():
+#         return FileResponse(html_file)
+#     return JSONResponse({"error": "Template not found"})
 
 @app.post("/api/analyze")
 async def analyze_image(
@@ -665,7 +666,7 @@ async def analyze_image(
             
             if has_inflammation:
                 seg_model = load_segmentation_model_sup(segment_model_sup)
-                preds, masks = segment_image(seg_model, image_pil, segment_model_sup, 'sup')
+                _, masks = segment_image(seg_model, image_pil, segment_model_sup, 'sup')
                 
                 if masks:
                     measurement = measure_thickness_new(masks, image_pil.size)
